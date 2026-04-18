@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ master, main ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   test:
     name: Test
@@ -19,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Install dependencies
         run: npm install
       - name: Run headless test (Linux)
@@ -41,7 +44,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Install dependencies
         run: npm install
       - name: Release
