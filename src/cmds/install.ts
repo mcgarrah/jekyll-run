@@ -32,7 +32,7 @@ export class Install {
                       });
                       child.on('close',  (code) => {
                         console.log('closing code: ' + code);
-                        resolve();
+                        resolve(undefined);
                       });
                 });
             }

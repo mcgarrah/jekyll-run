@@ -198,26 +198,29 @@
 		"@semantic-release/github": "^11.0.1",
 		"@semantic-release/npm": "^12.0.1",
 		"@semantic-release/release-notes-generator": "^14.0.3",
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^7.0.2",
-		"@types/node": "^13.11.0",
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^10.0.10",
+		"@types/node": "^20.17.0",
 		"@types/vscode": "^1.18.0",
-		"@typescript-eslint/eslint-plugin": "^2.30.0",
-		"@typescript-eslint/parser": "^2.30.0",
-		"eslint": "^6.8.0",
-		"glob": "^7.1.6",
-		"mocha": "^7.1.2",
-		"semantic-release": "^24.2.3",
-		"typescript": "^3.8.3",
+		"@typescript-eslint/eslint-plugin": "^8.58.2",
+		"@typescript-eslint/parser": "^8.58.2",
+		"@vscode/test-electron": "^2.4.1",
 		"@vscode/vsce": "^3.3.2",
-		"@vscode/test-electron": "^2.4.1"
+		"eslint": "^8.57.1",
+		"glob": "^7.2.3",
+		"mocha": "^11.7.5",
+		"semantic-release": "^24.2.3",
+		"typescript": "^5.7.3"
 	},
 	"dependencies": {
 		"compare-versions": "^3.6.0",
 		"read-yaml": "^1.1.0"
 	},
 	"release": {
-		"branches": ["master", "main"],
+		"branches": [
+			"master",
+			"main"
+		],
 		"verifyConditions": [
 			"@semantic-release/github"
 		],

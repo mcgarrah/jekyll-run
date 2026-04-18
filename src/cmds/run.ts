@@ -31,7 +31,7 @@ export class Run {
           });
 
           console.log("Running on PID: " + child.pid);
-          this.pid = child.pid;
+          this.pid = child.pid!;
 
           token.onCancellationRequested(async () => {
             console.log("User canceled. Stopping: " + child.pid);

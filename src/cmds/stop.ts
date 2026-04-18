@@ -15,13 +15,13 @@ export class Stop {
                 return new Promise(async (resolve) => {
                     console.log('stopping: ' + pid);
                     if (pid === 0) {
-                        resolve();
+                        resolve(undefined);
                     }
                     else {
                         killProcessAndChildren(pid).finally(() => {
                             outputChannel.appendLine('Server Stopped');
                             outputChannel.show(true);
-                            resolve();
+                            resolve(undefined);
                         });
                     }
                 });

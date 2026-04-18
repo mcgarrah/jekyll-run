@@ -23,7 +23,7 @@ export class Build {
                     token.onCancellationRequested(async () => {
                         console.log("User canceled. Stopping: " + child.pid);
                         const stop = new Stop();
-                        await stop.Stop(child.pid, outputChannel);
+                        await stop.Stop(child.pid!, outputChannel);
                         reject();
                     });
 
@@ -41,7 +41,7 @@ export class Build {
                     });
                     child.on('close', function (code) {
                         console.log('closing code: ' + code);
-                        resolve();
+                        resolve(undefined);
                     });
                 });
             },
