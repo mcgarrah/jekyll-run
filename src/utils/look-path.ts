@@ -99,9 +99,9 @@ const flatten = <T>(arr: T[][]): T[] => {
 export async function lookpath(command: string, opt: LookPathOption = {path: []}): Promise<string | undefined> {
 
     const directpath = isFilepath(command);
-    if (directpath) return isExecutable(directpath);
+    if (directpath) { return isExecutable(directpath); }
 
-    if (!opt.path) opt.path = [];
+    if (!opt.path) { opt.path = []; }
     const dirs = getDirsToWalkThrough(opt.path);
     const detections = dirs.map(dir => findExecutableUnderDir(command, dir));
     const matched = await Promise.all(detections);
