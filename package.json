@@ -252,9 +252,5 @@
 			"@semantic-release/git"
 		]
 	},
-	"private": true,
-	"files": [
-		"package.json",
-		"package-lock.json"
-	]
+	"private": true
 }
