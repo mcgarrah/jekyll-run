@@ -24,3 +24,11 @@ jobs:
         run: npm install -g @vscode/vsce
       - name: Publish to Marketplace
         run: vsce publish -p ${{ secrets.PUBLISHER_TOKEN }}
+
+# NOTE: This workflow requires a PUBLISHER_TOKEN secret containing a
+# VS Code Marketplace Personal Access Token (PAT) with Marketplace
+# Manage scope. Without it, this workflow will fail on release.
+# See: https://code.visualstudio.com/api/working-with-extensions/publishing-extension
+# Setup: GitHub repo → Settings → Secrets → Actions → New repository secret
+#   Name: PUBLISHER_TOKEN
+#   Value: <your Azure DevOps PAT with Marketplace Manage scope>
