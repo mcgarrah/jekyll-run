@@ -25,7 +25,8 @@ export class Run {
       async (_progress, token) => {
         return new Promise((resolve, reject) => {
           const config = Config.get();
-          var child = spawn('bundle exec jekyll serve', config.commandLineArguments.toString().trim().split(' '), {
+          const args = (config.commandLineArguments || '').toString().trim();
+          var child = spawn('bundle exec jekyll serve', args ? args.split(' ') : [], {
             cwd: workspaceRootPath,
             shell: true,
           });
@@ -71,7 +72,7 @@ export class Run {
             if(error.includes('ruby')){
               console.log('stderr: ' + data);
               this.regenerateStatus.hide();
-              reject(error.match(/\B(.+)Errno(.+)/m));
+              reject(error.match(/\B(.+)Errno(.+)/m) || error);
             }
           });
           child.on('close', (code) => {
