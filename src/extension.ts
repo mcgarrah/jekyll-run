@@ -42,7 +42,7 @@ enum Icons {
 
 function getConfigFromArgs() {
     const config = Config.get();
-    const args = config.commandLineArguments.toString();
+    const args = (config.commandLineArguments || '').toString();
     const m_port = args.match(/\B(-P|--port)\s(\d+)\b/);
     const m_baseurl = args.match(/\B(-b|--baseurl)\s(\S+)\b/);
     if (m_port) {
