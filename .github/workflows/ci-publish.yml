@@ -12,23 +12,30 @@ jobs:
     name: Publish
     runs-on: ubuntu-latest
     steps:
+      - name: Check for Marketplace token
+        id: check-token
+        run: |
+          if [ -z "${{ secrets.PUBLISHER_TOKEN }}" ]; then
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::PUBLISHER_TOKEN secret is not configured. Skipping Marketplace publish."
+            echo "::warning::To publish, add an Azure DevOps PAT with Marketplace Manage scope as a repository secret named PUBLISHER_TOKEN."
+          else
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Checkout
+        if: steps.check-token.outputs.has_token == 'true'
         uses: actions/checkout@v4
       - name: Setup Node.js
+        if: steps.check-token.outputs.has_token == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 20
       - name: Install dependencies
+        if: steps.check-token.outputs.has_token == 'true'
         run: npm install
       - name: Install vsce
+        if: steps.check-token.outputs.has_token == 'true'
         run: npm install -g @vscode/vsce
       - name: Publish to Marketplace
+        if: steps.check-token.outputs.has_token == 'true'
         run: vsce publish -p ${{ secrets.PUBLISHER_TOKEN }}
-
-# NOTE: This workflow requires a PUBLISHER_TOKEN secret containing a
-# VS Code Marketplace Personal Access Token (PAT) with Marketplace
-# Manage scope. Without it, this workflow will fail on release.
-# See: https://code.visualstudio.com/api/working-with-extensions/publishing-extension
-# Setup: GitHub repo → Settings → Secrets → Actions → New repository secret
-#   Name: PUBLISHER_TOKEN
-#   Value: <your Azure DevOps PAT with Marketplace Manage scope>
