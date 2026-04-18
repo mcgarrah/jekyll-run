@@ -19,7 +19,7 @@ export function findProcessOnPort(port: number): Promise<ProcessOnPort>{
         } else {
             var output = await executeCMD('lsof -i tcp:' + port);
             if(output !== 'error'){
-                var splittedOutput = output.split('\n')[1].split(' ');
+                var splittedOutput = output.split('\n')[1].split(/\s+/).filter(Boolean);
                     processOnPort.name = splittedOutput[0];
                     processOnPort.pid = +splittedOutput[1];
                     // var numbersInSplittedOutput = getNumbersInString(splittedOutput[0]);
