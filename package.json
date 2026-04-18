@@ -217,7 +217,7 @@
 		"read-yaml": "^1.1.0"
 	},
 	"release": {
-		"branches": "master",
+		"branches": ["master", "main"],
 		"verifyConditions": [
 			"@semantic-release/github"
 		],
