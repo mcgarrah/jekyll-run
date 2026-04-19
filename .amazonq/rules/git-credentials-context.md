@@ -78,6 +78,17 @@ curl -sv --max-time 5 https://github.com 2>&1 | grep "issuer:"
 
 **Fix:** Re-enable the corporate split VPN, then retry the push.
 
+**Quick check:** The `vpn` alias in `~/.zshrc` wraps the curl diagnostic into a one-word command:
+```bash
+➜  vpn
+✅ VPN ON — Direct connection (GitHub OK)
+
+➜  vpn
+❌ VPN OFF — Zscaler proxy (GitHub blocked)
+```
+Run `vpn` before debugging git push 403 errors — it distinguishes VPN/proxy issues from
+credential helper misconfiguration in seconds.
+
 **Key point:** The 403 from VPN/proxy issues looks identical to the 403 from credential
 helper misconfiguration. Check VPN status first before debugging credential helpers.
 
@@ -89,6 +100,29 @@ as a global credential helper. Check for this if 403 errors recur after software
 If 403 errors appear after no credential changes, check corporate VPN/proxy status before
 investigating credential helpers.
 
+
+### VS Code GitHub Accounts vs Git Credential Helpers
+
+VS Code's GitHub sign-in and the `gh` CLI credential helper are **completely independent**:
+
+| System | Account | Token Storage | Purpose |
+|--------|---------|---------------|--------|
+| `gh` CLI | Personal (`mcgarrah`) | macOS keyring | Git push/pull/fetch via `gh auth git-credential` |
+| VS Code OAuth | Corporate (Copilot) | VS Code secret storage | GitHub Copilot, GitHub Pull Requests, etc. |
+
+Signing into a corporate GitHub account in VS Code for Copilot does **not** affect
+git operations — they continue using the personal `mcgarrah` token from `gh auth`.
+
+**Multiple VS Code GitHub accounts:**
+- VS Code 1.90+ supports multiple GitHub accounts signed in simultaneously
+- Each extension binds to a specific account; VS Code tracks which extensions use which account
+- When signing out, VS Code prompts: "The account 'X' has been used by: [list of extensions]. Sign out from these extensions?"
+- Do NOT sign out of the personal `mcgarrah` account if GitHub Pull Requests or other extensions depend on it
+
+**Do NOT:**
+- Sign out of the personal GitHub account in VS Code to "switch" to corporate — sign into both
+- Confuse VS Code GitHub OAuth with `gh` CLI auth — they are separate token stores
+- Assume signing into corporate GitHub in VS Code will break git push — it won't
 
 ### File Operations: Prefer `git mv` Over `mv`
 
