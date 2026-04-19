@@ -69,6 +69,14 @@ A maintained fork of the abandoned [Jekyll Run](https://github.com/Kanna727/jeky
 14. **Duplicate error handlers** (`src/extension.ts`) — identical `.then(rejection)` / `.catch()` blocks repeated 4 times; extract to shared function
 15. **Commented-out code** (`src/utils/process-on-port.ts`, `src/utils/open-in-browser.ts`) — dead code from previous implementations
 
+## New Features
+
+See `FEATURE.md` in the repo root for planned features with full specs and implementation plans. Current planned features:
+
+- **Jekyll Clean Command** — `jekyll-run.Clean` runs `bundle exec jekyll clean`. When stopped: cleans cache. When running: stops → cleans → restarts. Keybinding: `ctrl+f10`/`cmd+f10`. This is a `main`-branch-only feature.
+- **Jekyll Doctor Command** — `jekyll-run.Doctor` runs `bundle exec jekyll doctor`. Read-only diagnostic, safe to run anytime. Keybinding: `ctrl+f11`/`cmd+f11`. `main`-branch-only.
+- **Automated Test Suite** — Replace placeholder test with real unit and integration tests covering utility functions, error handling, and new commands. High priority prerequisite for safe refactoring.
+
 ## Rename Checklist (for `main` branch)
 
 When renaming to "Run Jekyll", these files need changes:
@@ -175,8 +183,10 @@ The project uses `semantic-release` with conventional commits. The `ci-release.y
 | Published | 2026-05-11 | `_posts/2026-05-11-jekyll-run-vscode-plugin-local-development.md` | Configuration guide |
 | Draft | 2026-05-22 | `_drafts/2026-05-22-jekyll-run-plugin-multiroot-workspace-bug.md` | macOS debugging story |
 | Draft | 2026-05-25 | `_drafts/2026-05-25-forking-jekyll-run-to-run-jekyll.md` | Fork rationale and CI/CD |
+| Draft | 2026-05-28 | `_drafts/2026-05-28-run-jekyll-vscode-marketplace-publisher-setup.md` | VS Code Marketplace publisher account setup |
 | Draft | 2026-05-29 | `_drafts/2026-05-29-run-jekyll-bug-fixes-and-code-review.md` | 18 issues documented |
 | Draft | 2026-06-01 | `_drafts/2026-06-01-run-jekyll-testing-and-test-harness.md` | Test harness and regression tests |
+| Draft | 2026-06-04 | `_drafts/2026-06-04-run-jekyll-new-features-clean-doctor-tests.md` | New features: Clean, Doctor, test suite |
 
 All 4 drafts are marked `published: true` and read as finished — ready to promote to `_posts/`.
 
