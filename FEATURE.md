@@ -166,7 +166,18 @@ Note: The `when` clause is `!isBuilding` only (no `!isRunning` check) because Cl
 
 ### Notes
 
-- `bundle exec jekyll clean` removes `_site/`, `.jekyll-cache/`, and `.jekyll-metadata`
+- **`bundle exec jekyll clean` does NOT remove `.jekyll-cache/`** — it only removes `_site/` and `.jekyll-metadata`. `.jekyll-cache` is a **directory** managed separately by Jekyll's caching layer.
+- To fully fix incremental staleness, the Clean command must also explicitly remove the `.jekyll-cache` directory after running `jekyll clean`. Use a directory existence check before removal:
+  ```typescript
+  // After jekyll clean completes, also remove .jekyll-cache if present
+  // (jekyll clean does not remove it)
+  import * as fs from 'fs';
+  import * as path from 'path';
+  const cacheDir = path.join(workspaceRootPath, '.jekyll-cache');
+  if (fs.existsSync(cacheDir)) {
+      fs.rmSync(cacheDir, { recursive: true, force: true });
+  }
+  ```
 - The command is fast (< 1 second) — no need for cancellation support
 - When running, the stop → clean → restart sequence should feel like a single operation to the user
 - The progress notification title changes: "Jekyll Stopping..." → "Jekyll Cleaning" → "Jekyll Building"
