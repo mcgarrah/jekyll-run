@@ -92,6 +92,64 @@ credential helper misconfiguration in seconds.
 **Key point:** The 403 from VPN/proxy issues looks identical to the 403 from credential
 helper misconfiguration. Check VPN status first before debugging credential helpers.
 
+### npm Registry: Corporate Artifactory Proxy
+
+The corporate network blocks direct access to `registry.npmjs.org` even when the split
+VPN is ON (GitHub is in the split tunnel bypass list, but npm registry is not). All npm
+traffic must route through the corporate Artifactory instance.
+
+**This only affects the corporate macOS workstation with VPN.** Personal machines and
+homelab systems can reach `registry.npmjs.org` directly.
+
+**Symptom:**
+```
+npm error code ETIMEDOUT
+npm error errno ETIMEDOUT
+npm error network request to https://registry.npmjs.org/staticrypt failed, reason:
+```
+
+**Root Cause:** `registry.npmjs.org` is not in the split VPN bypass list, so traffic
+routes through the corporate proxy which blocks it. The VPN check (`vpn` alias) will
+show "✅ VPN ON" because GitHub works, but npm still times out.
+
+**Artifactory npm repositories:**
+
+| Repo Key | Type | URL / Upstream |
+|----------|------|----------------|
+| `shared-npm-remote` | Remote | Proxies `https://registry.npmjs.org` |
+| `shared-npm-envestnet-virtual` | Virtual | Aggregates remote + local (use this one) |
+
+**Fix:**
+```bash
+npm config set registry https://artifactory.env.io/artifactory/api/npm/shared-npm-envestnet-virtual/
+```
+
+**Verify:**
+```bash
+npm config get registry
+# Should show: https://artifactory.env.io/artifactory/api/npm/shared-npm-envestnet-virtual/
+```
+
+**Diagnosis when npm times out:**
+```bash
+# 1. Check VPN (GitHub may work even though npm doesn't)
+vpn
+
+# 2. Check if npm registry is reachable directly (will timeout on corporate network)
+curl -sv --max-time 5 https://registry.npmjs.org/ 2>&1 | grep -E "Connected|timed out"
+
+# 3. Check if Artifactory is reachable (should work on corporate network)
+curl -sv --max-time 5 https://artifactory.env.io/ 2>&1 | grep -E "Connected|timed out"
+
+# 4. Check current npm registry setting
+npm config get registry
+```
+
+**Do NOT suggest:**
+- Using `registry.npmjs.org` directly on the corporate machine (blocked)
+- Adding npm proxy settings (`npm config set proxy`) — Artifactory handles this
+- Bypassing the corporate proxy for npm traffic
+
 ### Prevention
 
 If the user installs or updates GCM (e.g., via `brew upgrade`), it may re-add itself
@@ -99,6 +157,9 @@ as a global credential helper. Check for this if 403 errors recur after software
 
 If 403 errors appear after no credential changes, check corporate VPN/proxy status before
 investigating credential helpers.
+
+If npm commands timeout after a clean install or `npm config` reset, check that the
+registry is still pointed at Artifactory (`npm config get registry`).
 
 
 ### VS Code GitHub Accounts vs Git Credential Helpers
