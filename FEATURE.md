@@ -407,3 +407,104 @@ For tests that need mocked `child_process`:
 
 - Blog draft: `_drafts/2026-06-01-run-jekyll-testing-and-test-harness.md` documents the test harness setup and planned tests
 - The 15 remaining issues from code review (see project-context.md) should each get a test when fixed
+
+---
+
+## Multi-Workspace Jekyll Site Selection
+
+**Status:** Planned
+**Branch:** `main` only (new feature, not a bug fix for upstream)
+**Priority:** Medium — affects anyone with multiple Jekyll repos in a multi-root workspace
+
+### Problem
+
+In a multi-root VS Code workspace containing multiple Jekyll sites (e.g., a blog repo and a
+resume repo that both have `_config.yml`), the extension always serves the first workspace
+folder when no editor is active. There is no way to explicitly choose which Jekyll site to
+run, stop, or build.
+
+The root cause is in `isStaticWebsiteWorkspace()` (`src/extension.ts`). The workspace
+selection logic:
+
+1. If an editor is active, use `workspace.getWorkspaceFolder(editor.document.uri)` — serves
+   whichever repo the currently open file belongs to.
+2. If no editor is active, fall back to `workspace.workspaceFolders[0]` — always the first
+   folder in the workspace definition.
+
+Neither path communicates to the user which site will be served. The implicit "active editor"
+behavior is surprising — opening a file from a different repo silently changes which site
+the Run button targets.
+
+### Proposed Solution
+
+Evaluate these options (likely combine 2 + 4):
+
+#### Option 1: Active Workspace Folder (current behavior, improved)
+
+Keep the current logic but add a status bar indicator showing which site is targeted.
+Lowest effort but still implicit — the user has to know that switching editor tabs changes
+the target.
+
+#### Option 2: Quick Pick Prompt on Ambiguity
+
+When the user clicks Run/Build/Clean and multiple workspace folders contain `_config.yml`,
+show a VS Code QuickPick:
+
+```
+Select Jekyll site to serve:
+  ● mcgarrah.github.io (port 4000)
+  ○ resume (port 4000)
+```
+
+Only prompt when there's ambiguity (multiple Jekyll sites detected). Single-site workspaces
+behave exactly as today.
+
+#### Option 3: Configuration Setting
+
+Add a `jekyll-run.workspaceFolder` setting:
+
+```json
+{
+    "jekyll-run.workspaceFolder": "mcgarrah.github.io"
+}
+```
+
+Pins the target to a specific workspace folder by name. Falls back to current behavior if
+unset. Useful for users who always want the same site.
+
+#### Option 4: Status Bar Indicator
+
+Show the currently targeted Jekyll site in the status bar:
+
+```
+▶ Jekyll Run: mcgarrah.github.io
+```
+
+Clicking the indicator opens the QuickPick from Option 2, allowing the user to switch
+without opening a file from the other repo.
+
+### Recommended Approach
+
+**Option 2 + Option 4** — prompt on ambiguity, show current selection in status bar.
+
+- On first Run in a multi-Jekyll workspace: QuickPick to select site
+- Status bar shows current target at all times
+- Clicking status bar re-opens QuickPick to switch
+- Single-Jekyll workspaces: no change in behavior
+
+### Implementation Notes
+
+- Scan `workspace.workspaceFolders` for folders containing `_config.yml` at activation time
+- Cache the list of Jekyll-capable folders
+- Store the user's selection in workspace state (`context.workspaceState`) so it persists
+  across VS Code restarts
+- The port/baseurl resolution in `getPortAndBaseurl()` already accepts a `WorkspaceFolder`
+  parameter — the plumbing is there, just needs a selection mechanism upstream of it
+
+### Testing
+
+- **Single Jekyll site in workspace**: No prompt, behaves exactly as today
+- **Multiple Jekyll sites, no prior selection**: QuickPick appears on Run
+- **Multiple Jekyll sites, prior selection stored**: Uses stored selection, shows in status bar
+- **User clicks status bar**: QuickPick appears to change selection
+- **Workspace folder removed**: Clears stored selection if it was the removed folder

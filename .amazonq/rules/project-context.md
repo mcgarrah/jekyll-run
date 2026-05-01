@@ -75,6 +75,7 @@ See `FEATURE.md` in the repo root for planned features with full specs and imple
 
 - **Jekyll Clean Command** — `jekyll-run.Clean` runs `bundle exec jekyll clean`. When stopped: cleans cache. When running: stops → cleans → restarts. Keybinding: `ctrl+f10`/`cmd+f10`. This is a `main`-branch-only feature.
 - **Jekyll Doctor Command** — `jekyll-run.Doctor` runs `bundle exec jekyll doctor`. Read-only diagnostic, safe to run anytime. Keybinding: `ctrl+f11`/`cmd+f11`. `main`-branch-only.
+- **Multi-Workspace Site Selection** — In multi-root workspaces with multiple Jekyll repos, let the user choose which site to serve. Currently `isStaticWebsiteWorkspace()` falls back to `workspaceFolders[0]` when no editor is active. Planned: QuickPick prompt on ambiguity + status bar indicator showing current target. `main`-branch-only.
 - **Automated Test Suite** — Replace placeholder test with real unit and integration tests covering utility functions, error handling, and new commands. High priority prerequisite for safe refactoring.
 
 ## Rename Checklist (for `main` branch)
